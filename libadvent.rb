@@ -3,6 +3,12 @@ class Array
   def combinations # all combinations
     (1..size).map { |n| combination(n) }.flatten
   end
+
+  def frequency
+    # mode and (what is the least frequent called?)
+    min, max = tally.minmax { |(_,a),(_,b)| a <=> b }.map(&:first)
+    { most: max, least: min }
+  end
 end
 
 class String
