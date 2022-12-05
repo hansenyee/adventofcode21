@@ -1,79 +1,48 @@
-require "set"
 class Array
-  def combinations # all combinations
+  # all combinations
+  def combinations
     (1..size).map { |n| combination(n) }.flatten
   end
 
   def frequency
     # mode and (what is the least frequent called?)
-    min, max = tally.minmax { |(_,a),(_,b)| a <=> b }.map(&:first)
+    min, max = tally.minmax_by { |(_, v)| v }.map(&:first)
     { most: max, least: min }
   end
 end
 
 class String
-  def to_i2 # bits to integer
+  # bits to integer
+  def to_i2
     to_i(2)
+  end
+
+  def sort
+    chars.sort.join
   end
 end
 
 class Integer
-  def to_bin # integer to bits
-    sprintf("%b", self)
+  # integer to bits
+  def to_bin
+    format('%b', self)
   end
+
   def to_hex
-    sprintf("%x", self)
+    format('%x', self)
   end
 end
 
 class Hash
   def self.new_of_arrays(*array_init)
-    self.new { |h,k| h[k] = Array.new(*array_init) }
+    new { |h, k| h[k] = Array.new(*array_init) }
   end
 end
 
-class RingList # See 2020 #23
-  attr_reader :size
+module Advent
+  module_function
 
-  Node = Struct.new(:data, :next) {
-    def to_a
-      [data] + self.next.to_a
-    end
-  }
-
-  def initialize(list, index: false)
-    @size = list.size
-    @head = Node.new(list[0])
-    @index = {}
-    @index[list[0]] = @head if index
-    curr = @head
-    list[1..-1].each { |i|
-      curr.next = Node.new(i)
-      curr = curr.next
-      @index[i] = current if index
-    }
-    curr.next = @head
+  def commas(io)
+    io.read.split(',')
   end
-
-  def inspect
-    "#<#{self.class} head pointing #{@head.data}>"
-  end
-
-  def to_a
-    res = Array.new(@size)
-    current = @head
-    res.each_index { |i|
-      res[i] = current.data
-      current = current.next
-    }
-  end
-
-  def rotate
-    @head = @head.next
-    return @head.data
-  end
-
-  def curr
-    @head.data
-  end
-end # RingList
+end
